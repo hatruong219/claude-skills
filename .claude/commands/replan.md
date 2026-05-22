@@ -1,13 +1,21 @@
+---
+description: Update .claude/<task>/plan.md based on feedback without losing already-done work
+argument-hint: "<task-slug> <feedback>"
+allowed-tools: Read, Write, Bash, Agent
+---
+
 You are updating an existing plan based on new feedback. Do NOT restart from scratch — work from what already exists.
 
-## Feedback
+## Arguments
 $ARGUMENTS
+
+Parse: first word = `<task-slug>`, remainder = `<feedback>`.
 
 ---
 
 ## Step 1 — Load Current State
 
-Read `PLAN.md` to understand the current plan.
+Read `.claude/<task-slug>/plan.md` and `.claude/<task-slug>/status.md` (if exists).
 
 Then run:
 ```bash
@@ -15,20 +23,18 @@ git diff HEAD
 git status
 ```
 
-Check which steps in the plan are already implemented:
-- If a file listed in the plan has been modified in the git diff → mark as `- [x]` (done)
-- If not yet touched → keep as `- [ ]` (remaining)
+Cross-reference: steps marked `- [x]` in plan.md are done. Steps in `status.md` as `⏳` were interrupted — treat as NOT done.
 
 ---
 
 ## Step 2 — Understand the Feedback
 
-Analyze what the user wants to change:
-- Is it about approach? (affects remaining steps, may conflict with done steps)
-- Is it about a specific file or step? (local change)
-- Does it invalidate anything already implemented?
+Analyze what needs to change:
+- Affects approach? (may conflict with done steps)
+- Affects a specific step only? (local change)
+- Invalidates already-implemented work?
 
-If the feedback conflicts with already-done work, flag it explicitly:
+If it conflicts with already-done work, flag explicitly:
 > "⚠️ This change conflicts with already-implemented [file]. You may need to revert [specific change]."
 
 Do NOT silently undo done work.
@@ -37,14 +43,15 @@ Do NOT silently undo done work.
 
 ## Step 3 — Update the Plan
 
-Apply the feedback to `PLAN.md`:
-- Keep `- [x]` items intact (already done)
-- Update only `- [ ]` items and the Approach/Decisions sections as needed
-- Add new steps if the feedback introduces new scope
+Apply feedback to `.claude/<task-slug>/plan.md`:
+- Keep `- [x]` items intact
+- Update `- [ ]` items and Approach/Specs/Decisions sections as needed
+- Add new steps if feedback introduces new scope
 - Update the footer:
 
 ```
 ---
+_Task: [task]_
 _Created: [original timestamp]_
 _Updated: [new timestamp]_
 _Change: [one-line summary of this update]_
@@ -55,11 +62,8 @@ _Critic findings: [from original plan]_
 
 ## Step 4 — Quick Critic on the Changes
 
-Run a focused critic only on what changed:
-
-> "The plan was just updated with this change: [feedback summary].
-> Does this update introduce any new issues?
-> Are the remaining steps still coherent with the new approach?"
+Launch a `critic` agent:
+> "The plan at .claude/<task-slug>/plan.md was just updated with: <feedback>. Focus only on the changed parts — do the remaining steps still cohere? Any new issues introduced?"
 
 Fix any issues found.
 
@@ -67,7 +71,7 @@ Fix any issues found.
 
 ## Step 5 — Save and Report
 
-Save the updated `PLAN.md`.
+Save the updated `.claude/<task-slug>/plan.md`.
 
 Then show:
 ```
@@ -83,4 +87,4 @@ Then show:
 - ⚠️ [conflict description]
 ```
 
-Ask: **"Updated plan looks good? Run `/implement` to continue."**
+Ask: **"Updated. Run `/implement <task-slug>` to continue."**

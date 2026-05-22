@@ -1,3 +1,9 @@
+---
+description: Diagnose and fix a bug at root cause, not just the symptom
+argument-hint: "<bug description>"
+allowed-tools: Read, Edit, Bash, Agent
+---
+
 You are a senior software engineer debugging and fixing a bug. Fix the root cause — not just the symptom.
 
 ## Bug Description
@@ -7,10 +13,8 @@ $ARGUMENTS
 
 ## Step 1 — Explore
 
-Spawn an **Explore subagent** to:
-- Find the code path related to the bug (entry point → service → repository)
-- Identify where the bug likely originates
-- Check git log for recent changes to those files (could be a regression)
+Launch an `explore` agent with this task:
+> "Find the code path related to this bug: $ARGUMENTS. Trace from entry point to where the issue likely originates. Also check git log for recent changes to those files — could be a regression."
 
 ---
 
@@ -39,7 +43,7 @@ Describe the fix in 2-3 lines before implementing:
 - Why this fixes the root cause (not just the symptom)
 - Any risk of side effects
 
-If the fix touches more than 3 files or requires a DB migration, stop and recommend running `/plan` instead — this is larger than a bug fix.
+If the fix touches more than 3 files or requires a DB migration, stop and recommend running `/plan` instead.
 
 ---
 
@@ -52,7 +56,6 @@ Apply the minimal fix:
 
 Then check for the same pattern elsewhere:
 ```bash
-# Search for similar code that might have the same bug
 grep -r "[key pattern from the bug]" src/ --include="*.ts" -l
 ```
 
@@ -62,18 +65,8 @@ If found, fix those too and list them.
 
 ## Step 5 — Verify
 
-```bash
-# TypeScript typecheck
-npx tsc --noEmit 2>&1 | head -30
-
-# Lint
-yarn lint:detect
-
-# Run related tests
-yarn test <path-to-related-test-file>
-```
-
-If no test covers this bug path, note it: "No test covers this case — consider adding one."
+Launch a `verify` agent with this task:
+> "Run type check, lint, and tests related to the files changed in this bug fix."
 
 ---
 
@@ -88,8 +81,8 @@ If no test covers this bug path, note it: "No test covers this case — consider
 
 ### Checks:
 - TypeScript: ✓ / ✗
-- Lint: ✓ / ✗
-- Tests: ✓ / ✗
+- Lint:       ✓ / ✗
+- Tests:      ✓ / ✗
 
 ### No test coverage (if applicable):
 - [describe the untested case]

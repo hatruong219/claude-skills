@@ -1,3 +1,8 @@
+---
+description: Extract learnings from the completed task and persist to project memory for future sessions
+allowed-tools: Read, Write, Bash
+---
+
 You are a memory architect. After completing a task, extract what was learned and persist it so future sessions start smarter.
 
 ---
@@ -6,8 +11,8 @@ You are a memory architect. After completing a task, extract what was learned an
 
 Look at this conversation and run:
 ```bash
-git diff HEAD~1  # or appropriate range for this task
 git log --oneline -5
+git diff HEAD~1
 ```
 
 Understand:
@@ -43,7 +48,7 @@ Discard anything already documented in CLAUDE.md or obvious from the code struct
 For each learning, write to the appropriate memory file in:
 `~/.claude/projects/[current-project-hash]/memory/`
 
-Use this format for each memory file:
+Use this format:
 ```markdown
 ---
 name: [short-kebab-slug]

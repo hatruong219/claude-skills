@@ -1,3 +1,9 @@
+---
+description: Explore codebase, draft an implementation plan with adversarial critic pass, save to .claude/<task>/plan.md
+argument-hint: "<task description>"
+allowed-tools: Read, Write, Bash, Agent, TodoWrite
+---
+
 You are orchestrating a planning pipeline. Your ONLY job is to produce a high-quality implementation plan — do NOT write any code.
 
 ## Task
@@ -5,56 +11,60 @@ $ARGUMENTS
 
 ---
 
+## Step 0 — Prepare directory
+
+Slugify the task name into a short kebab-case identifier (e.g. "add user auth" → `add-user-auth`). Call it `<task-slug>`.
+
+Run:
+```bash
+mkdir -p .claude/<task-slug>
+```
+
+All output for this task lives in `.claude/<task-slug>/`.
+
+---
+
 ## Step 1 — Explore
 
-Spawn an **Explore subagent** (read-only) to:
-- Find all files relevant to this task (entities, services, resolvers, DTOs, migrations, tests)
-- Identify existing patterns for similar features
-- Note conventions in use (naming, structure, decorators)
-- Check if similar logic already exists that can be reused
+Launch an `explore` agent with this task:
+> "Find all files relevant to: $ARGUMENTS. Identify existing patterns for similar features, conventions in use (naming, structure, decorators), and any similar logic that can be reused."
 
 ---
 
 ## Step 2 — Generate Plan
 
-Using the exploration output, draft an initial plan in this format:
+Using the exploration output, draft a plan with this structure:
 
-```
-## Plan: [task summary]
+```markdown
+# Plan: [task summary]
 
-### Approach
+## Approach
 [1-2 sentences: WHAT and WHY this approach over alternatives]
 
-### Steps
+## Specs
+[Key behaviors the implementation must satisfy — written as requirements, not steps]
+
+## Steps
 - [ ] **[file path]** — [what to change and why]
 - [ ] **[file path]** — [what to change and why]
 - [ ] Create **[file path]** — [purpose]
 - [ ] Migration: [description]
 
-### Decisions & Risks
+## Decisions & Risks
 - [Non-obvious choices and reasoning]
 - [Potential gotchas]
 ```
 
-Use `- [ ]` checkboxes for every step — these will be checked off during `/implement`.
+Use `- [ ]` checkboxes — these will be checked off during `/implement`.
 
 ---
 
 ## Step 3 — Critic Pass (REQUIRED)
 
-Spawn a **new subagent** with this adversarial role:
-
-> "You are a senior engineer who must find flaws in this plan before it gets implemented.
-> Your job is NOT to validate — your job is to break it.
+Launch a `critic` agent with this task:
+> "Review the plan for: $ARGUMENTS. Read the plan content below and relevant source files. Find every flaw — missing files, things that will break, unnecessary complexity, backward compatibility issues, convention violations.
 >
-> Check:
-> - What files are missing? (tests, resolvers, permission configs, GraphQL schema, etc.)
-> - If implemented as-is, what will break?
-> - Is the approach too complex? Could it be simpler?
-> - Backward compatibility issues (especially DB migrations)?
-> - Follows project conventions?
->
-> Output a numbered list of issues. If nothing is wrong, explain why — don't just say 'looks good'."
+> [paste the draft plan here]"
 
 ---
 
@@ -64,22 +74,25 @@ Fix each valid critic issue. Note any disagreements explicitly.
 
 ---
 
-## Step 5 — Save to PLAN.md
+## Step 5 — Save
 
-Write the final plan to `PLAN.md` in the project root. Append:
+Use the **Write tool** to save to `.claude/<task-slug>/plan.md`. Append at the bottom:
 
 ```
 ---
+_Task: $ARGUMENTS_
 _Created: [timestamp]_
 _Critic findings: [one-line summary of what was found and fixed]_
 ```
+
+Do NOT output the plan only in chat — it MUST be written to disk.
 
 ---
 
 ## Step 6 — Checkpoint
 
-Say "Plan saved to PLAN.md" and summarize what the critic flagged and what was adjusted.
+Say "Plan saved to `.claude/<task-slug>/plan.md`" and summarize what the critic flagged and what was adjusted.
 
-Then: **"Looks good? Confirm to proceed with `/implement`, or run `/replan <feedback>` to adjust."**
+Then: **"Looks good? Run `/implement <task-slug>` to start, or `/replan <task-slug> <feedback>` to adjust."**
 
 Do NOT proceed to implementation.

@@ -1,3 +1,8 @@
+---
+description: Review current git changes for correctness, security, and convention compliance
+allowed-tools: Read, Bash, Agent
+---
+
 You are a senior code reviewer. Review the current changes with a focus on correctness, security, and maintainability.
 
 ---
@@ -18,10 +23,8 @@ git diff HEAD~1
 
 ## Step 2 — Understand Context
 
-Spawn an **Explore subagent** to:
-- Read the full content of changed files (not just the diff)
-- Understand what the surrounding code does
-- Identify the conventions used in the rest of the codebase for similar patterns
+Launch an `explore` agent with this task:
+> "Read the full content of the changed files (not just the diff). Understand what the surrounding code does and identify the conventions used in the rest of the codebase for similar patterns."
 
 ---
 
