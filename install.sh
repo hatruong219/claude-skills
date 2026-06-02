@@ -15,10 +15,22 @@ link() {
   echo "  linked $dst → $src"
 }
 
-echo "Installing claude skills from $DOTFILES"
+echo "Installing claude dotfiles from $DOTFILES"
 
 mkdir -p ~/.claude
-link "$DOTFILES/.claude/commands" ~/.claude/commands
-link "$DOTFILES/.claude/agents"   ~/.claude/agents
 
-echo "Done."
+# Skills và Agents — available in mọi project
+link "$DOTFILES/.claude/commands"  ~/.claude/commands
+link "$DOTFILES/.claude/agents"    ~/.claude/agents
+
+# Global harness: hooks, permissions — áp dụng mọi project
+link "$DOTFILES/.claude/settings.json" ~/.claude/settings.json
+
+# Global instructions — mọi project đọc, project có thể override bằng ./CLAUDE.md riêng
+link "$DOTFILES/.claude/CLAUDE.md" ~/.claude/CLAUDE.md
+
+echo "Done. Agents, skills, harness và global instructions đã được link."
+echo ""
+echo "Cấu trúc 2 cấp:"
+echo "  Global : ~/.claude/  (từ dotfiles, dùng cho mọi project)"
+echo "  Project: <project>/CLAUDE.md + <project>/.claude/settings.json (tùy chỉnh per project)"

@@ -13,6 +13,15 @@ Parse: first word = `<task-slug>`, remainder = `<feedback>`.
 
 ---
 
+## Context — User-Provided Files
+
+Scan `$ARGUMENTS` for `@file` references.
+
+- If `@` files are present → these are the **specific parts of the plan** the user wants to revisit. Focus the replan and critic pass around these files.
+- If no `@` files → apply feedback broadly as normal.
+
+---
+
 ## Step 1 — Load Current State
 
 Read `.claude/<task-slug>/plan.md` and `.claude/<task-slug>/status.md` (if exists).

@@ -11,6 +11,15 @@ $ARGUMENTS
 
 ---
 
+## Context — User-Provided Files
+
+Scan `$ARGUMENTS` for `@file` references (e.g. `@src/user/user.service.ts`).
+
+- If `@` files are present → read them **immediately**, treat as PRIMARY context. Tell the `explore` agent to start from these files and expand outward only if needed.
+- If no `@` files → explore freely as normal.
+
+---
+
 ## Step 0 — Prepare directory
 
 Slugify the task name into a short kebab-case identifier (e.g. "add user auth" → `add-user-auth`). Call it `<task-slug>`.

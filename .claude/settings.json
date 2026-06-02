@@ -1,0 +1,101 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git status)",
+      "Bash(git diff*)",
+      "Bash(git log*)",
+      "Bash(git add*)",
+      "Bash(git commit*)",
+      "Bash(git branch*)",
+      "Bash(git show*)",
+      "Bash(ls*)",
+      "Bash(find . *)",
+      "Bash(grep*)",
+      "Bash(cat*)",
+      "Bash(echo*)",
+      "Bash(pwd)",
+      "Bash(mkdir*)",
+      "Bash(wc*)",
+      "Bash(head*)",
+      "Bash(tail*)",
+      "Bash(sort*)",
+      "Bash(which*)",
+      "Bash(node --version)",
+      "Bash(npm --version)",
+      "Bash(yarn --version)",
+      "Bash(python3 --version)",
+      "Bash(sleep*)",
+      "Bash(while*)",
+      "Bash(python3 .claude/team/dashboard.py*)",
+      "Bash(kill*)",
+      "Bash(lsof*)",
+      "Bash(rm -f .claude/team/approval-response.json)",
+      "Bash(rm -f .claude/team/approval.json)",
+      "Write(.claude/team/agents/coordinator.json)",
+      "Write(.claude/team/agents/researcher.json)",
+      "Write(.claude/team/agents/architect.json)",
+      "Write(.claude/team/agents/implementer.json)",
+      "Write(.claude/team/agents/reviewer.json)",
+      "Write(.claude/team/queue.md)",
+      "Write(.claude/team/memory.md)",
+      "Write(.claude/team/handoffs.md)",
+      "Write(.claude/team/approval.json)",
+      "Write(.claude/team/approval-response.json)",
+      "Edit(.claude/team/queue.md)",
+      "Edit(.claude/team/memory.md)",
+      "Edit(.claude/team/handoffs.md)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(git push --force*)",
+      "Bash(git reset --hard*)",
+      "Bash(chmod 777*)"
+    ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '[harness] Session ended. Run /reflect to persist learnings to memory.' 1>&2"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mkdir -p ~/.claude/logs && echo \"[$(date -u +%Y-%m-%dT%H:%M:%SZ)] PreToolUse:Bash\" >> ~/.claude/logs/audit.log"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mkdir -p ~/.claude/logs && echo \"[$(date -u +%Y-%m-%dT%H:%M:%SZ)] PostToolUse:FileEdit\" >> ~/.claude/logs/audit.log"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mkdir -p ~/.claude/logs && echo \"[$(date -u +%Y-%m-%dT%H:%M:%SZ)] SubagentStop\" >> ~/.claude/logs/audit.log"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -11,6 +11,15 @@ $ARGUMENTS
 
 ---
 
+## Context — User-Provided Files
+
+Scan `$ARGUMENTS` for `@file` references (e.g. `@src/user/user.service.ts`).
+
+- If `@` files are present → read them **immediately**, treat as PRIMARY context. The bug likely lives in or near these files — tell the `explore` agent to start here.
+- If no `@` files → explore freely as normal.
+
+---
+
 ## Step 1 — Explore
 
 Launch an `explore` agent with this task:

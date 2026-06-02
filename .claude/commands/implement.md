@@ -11,6 +11,15 @@ $ARGUMENTS
 
 ---
 
+## Context — User-Provided Files
+
+Scan `$ARGUMENTS` for `@file` references (e.g. `@src/user/user.service.ts`).
+
+- If `@` files are present → these are the files **most likely to be edited**. Read them immediately before implementing. Prioritize changes here over files found by exploration.
+- If no `@` files → follow the plan steps as normal.
+
+---
+
 ## Step 1 — Load Plan & Resume State
 
 **Find the plan:**

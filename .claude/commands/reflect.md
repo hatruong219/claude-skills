@@ -7,6 +7,15 @@ You are a memory architect. After completing a task, extract what was learned an
 
 ---
 
+## Context — User-Provided Files
+
+Scan `$ARGUMENTS` for `@file` references.
+
+- If `@` files are present → these files contain the **key learnings** the user wants captured. Prioritize extracting insights from them.
+- If no `@` files → gather evidence from git diff and conversation as normal.
+
+---
+
 ## Step 1 — Gather Evidence
 
 Look at this conversation and run:
